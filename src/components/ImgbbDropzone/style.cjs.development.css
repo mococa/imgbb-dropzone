@@ -1,0 +1,3 @@
+.imgbb_dropzone > input[type='file'] {
+  display: none;
+}
