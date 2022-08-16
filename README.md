@@ -12,11 +12,10 @@ yarn add imgbb-dropzone
 
 ### Usage
 
-```js
+```tsx
 const App = () => {
   // When it's not uploading, upload_progress = null
-  const [upload_progress, setUploadProgress] =
-    (useState < number) | (null > null);
+  const [upload_progress, setUploadProgress] = useState<number | null>(null);
 
   return (
     <div>
