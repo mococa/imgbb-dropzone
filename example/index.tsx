@@ -11,9 +11,9 @@ const App = () => {
   return (
     <div>
       <ImgbbDropzone
-        imgbb_api_key="API-KEY"
+        imgbb_api_key="81e1f65f1f588db73e831f1b5477cec1"
         allowed_types={['image/png', 'image/jpeg']}
-        onUploadFinished={console.log}
+        onUploadFinished={({ data }) => console.log(data?.display_url)}
         onDragOver={() => console.log('image over dropzone')}
         onUploadProgress={setUploadProgress}
       >
