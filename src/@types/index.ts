@@ -37,7 +37,7 @@ export namespace ImgBBService {
     onUploadUpdate?: (percentage: number) => void;
   }
 
-  export interface UploadOutput {
+  export interface ImageBBData {
     id: string;
     title: string;
     url_viewer: string;
@@ -52,5 +52,11 @@ export namespace ImgBBService {
     thumb: ImageBBImage;
     medium: ImageBBImage;
     delete_url: string;
+  }
+
+  export interface UploadOutput {
+    data?: ImageBBData;
+    status: number;
+    success?: boolean;
   }
 }

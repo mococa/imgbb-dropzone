@@ -33,9 +33,10 @@ interface Props {
    */
   upload_options?: Partial<ImgBBService.UploadOptions>;
   /**
-   * Image allowed types
+   * Image allowed types.
+   * E.g: ["image/png", "image/jpeg", "image/gif"]
    */
-  allowed_types: string[];
+  allowed_types?: string[];
   /**
    * Dropzone body
    */
@@ -48,7 +49,7 @@ export const ImgbbDropzone = ({
   onUploadFinished,
   imgbb_api_key,
   upload_options,
-  allowed_types,
+  allowed_types = ['image/png', 'image/jpeg'],
   children,
 }: Props) => {
   /* ---------- Refs ---------- */
@@ -58,6 +59,10 @@ export const ImgbbDropzone = ({
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
+    const image_type = e.dataTransfer.items[0]?.type || '';
+
+    if (!allowed_types.includes(image_type)) return;
 
     if (onDragOver) onDragOver();
   };
