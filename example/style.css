@@ -1,0 +1,76 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 200px;
+  width: 350px;
+
+  border: 2px dashed #dedede;
+
+  padding: 16px;
+}
+
+.App {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 94px;
+}
+
+.uploaded-pics {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(4, 196px);
+
+  width: 80%;
+  overflow-x: auto;
+}
+
+.uploaded-pics img {
+  object-fit: cover;
+  width: fill-available;
+  width: -webkit-fill-available;
+  width: -moz-available;
+}

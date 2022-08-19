@@ -4,18 +4,22 @@ import React, { useRef } from 'react';
 /* ---------- Types ---------- */
 import { ImgBBService } from '../../@types';
 
+/* ---------- Contexts ---------- */
+import { useImgbb } from '../../context/ImgbbContext';
+
 /* ---------- Services ---------- */
 import { imgbb_upload_service } from '../../services/imgbb';
-
-/* ---------- Styles ---------- */
-import './style.cjs.development.css';
 
 /* ---------- Interfaces ---------- */
 interface Props {
   /**
    * Function triggered when mouse is dragging a file and it's over dropdown
    */
-  onDragOver?: () => void;
+  onDragIn?: React.DragEventHandler<HTMLDivElement>;
+  /**
+   * Function triggered when mouse is dragging a file and it's **NOT** over dropdown anymore
+   */
+  onDragOut?: React.DragEventHandler<HTMLDivElement>;
   /**
    * Function triggered each time the upload progress updates
    */
@@ -25,15 +29,12 @@ interface Props {
    */
   onUploadFinished?: (data: ImgBBService.UploadOutput) => void;
   /**
-   * ImgBB API Key
-   */
-  imgbb_api_key: string;
-  /**
    * ImgBB Upload options
    */
   upload_options?: Partial<ImgBBService.UploadOptions>;
   /**
    * Image allowed types.
+   *
    * E.g: ["image/png", "image/jpeg", "image/gif"]
    */
   allowed_types?: string[];
@@ -44,16 +45,19 @@ interface Props {
 }
 
 export const ImgbbDropzone = ({
-  onDragOver,
+  onDragIn,
+  onDragOut,
   onUploadProgress,
   onUploadFinished,
-  imgbb_api_key,
   upload_options,
   allowed_types = ['image/png', 'image/jpeg'],
   children,
 }: Props) => {
   /* ---------- Refs ---------- */
   const input_ref = useRef<HTMLInputElement>(null);
+
+  /* ---------- Hooks ---------- */
+  const { imgbb_api_key } = useImgbb();
 
   /* ---------- Handlers ---------- */
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -64,11 +68,22 @@ export const ImgbbDropzone = ({
 
     if (!allowed_types.includes(image_type)) return;
 
-    if (onDragOver) onDragOver();
+    if (onDragIn) onDragIn(e);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onDragOut) onDragOut(e);
   };
 
   const handleUpload = async (file: File) => {
+    if (!input_ref.current) return;
+
     try {
+      input_ref.current.disabled = true;
+
       const { data } = await imgbb_upload_service({
         api_key: imgbb_api_key,
         options: upload_options,
@@ -82,13 +97,14 @@ export const ImgbbDropzone = ({
     }
 
     if (onUploadProgress) onUploadProgress(null);
+
+    input_ref.current.disabled = false;
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!input_ref) return;
     if (!input_ref.current) return;
 
     if (input_ref.current.disabled) return;
@@ -116,23 +132,23 @@ export const ImgbbDropzone = ({
 
   return (
     <div
-      className="imgbb_dropzone"
       onDragOver={handleDragOver}
+      onDragExit={handleDragLeave}
       onDrop={handleDrop}
       onClick={handleDropzoneClick}
-      aria-disabled={input_ref.current?.disabled}
     >
       <input
+        style={{ display: 'none' }}
         type="file"
         ref={input_ref}
         disabled={input_ref.current?.disabled}
-        onChange={({ target }) => {
+        onChange={async ({ target }) => {
           if (!input_ref.current) return;
 
           if (target.files?.length) {
-            Object.assign(input_ref.current, { disabled: true });
-
-            handleUpload(target.files[0]);
+            await handleUpload(target.files[0]);
+          } else {
+            input_ref.current.disabled = false;
           }
         }}
         accept={allowed_types.join(',')}
